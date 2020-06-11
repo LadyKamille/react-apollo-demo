@@ -3,7 +3,7 @@ import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 import React from 'react';
 import './App.css';
 import createClient from './apolloClient';
-import Repositories from './Repositories';
+import Repositories from './Repositories/Repositories';
 
 const client = createClient();
 

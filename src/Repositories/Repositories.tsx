@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 import { useQuery } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
+import { Repository } from '../generated/graphql';
 
 const REPOSITORIES_QUERY = gql`
     query getRepositories {
@@ -24,7 +25,7 @@ const REPOSITORIES_QUERY = gql`
 
 const Repositories:React.FC = ():React.ReactElement => {
 
-  const { loading, error, data } = useQuery(REPOSITORIES_QUERY);
+  const { loading, error, data } = useQuery<Repository>(REPOSITORIES_QUERY);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error! {JSON.stringify(error)}</div>;

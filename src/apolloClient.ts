@@ -1,7 +1,6 @@
 import ApolloClient from 'apollo-boost';
 
 const createClient = () => {
-  console.log('process.env', process.env);
   return new ApolloClient({
     uri: 'https://api.github.com/graphql',
     request: async (operation) => {

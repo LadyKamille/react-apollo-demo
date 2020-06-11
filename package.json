@@ -12,6 +12,7 @@
     "@types/react-dom": "^16.9.0",
     "apollo-boost": "^0.4.9",
     "apollo-client": "^2.6.10",
+    "apollo-codegen": "^0.20.2",
     "apollo-link-context": "^1.0.20",
     "graphql": "^15.1.0",
     "graphql-tag": "^2.10.3",
@@ -27,8 +28,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "gen": "graphql-schema-typescript generate-ts src/schemas.graphql --output src/schemas.d.ts",
-    "gen:watch": "nodemon --watch src/schemas.graphql --exec npm run gen"
+    "apollo:generate": "graphql-codegen -r dotenv/config --config codegen.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -45,5 +45,11 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@graphql-codegen/cli": "1.15.2",
+    "@graphql-codegen/introspection": "^1.15.2",
+    "@graphql-codegen/typescript": "1.15.2",
+    "@graphql-codegen/typescript-operations": "^1.15.2",
+    "@graphql-codegen/typescript-react-apollo": "1.15.2"
+  }
 }
