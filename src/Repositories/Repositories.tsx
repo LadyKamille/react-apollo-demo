@@ -4,23 +4,23 @@ import gql from 'graphql-tag';
 import { Repository } from '../generated/graphql';
 
 const REPOSITORIES_QUERY = gql`
-    query getRepositories {
-        viewer {
-            repositories (last: 100, isFork: false) {
-                nodes {
-                    name
-                    description
-                    url
-                    languages(first: 5) {
-                        nodes {
-                            color
-                            name
-                        }
-                    }
-                }
+  query getRepositories {
+    viewer {
+      repositories (last: 100, isFork: false) {
+        nodes {
+          name
+          description
+          url
+          languages(first: 5) {
+            nodes {
+              color
+              name
             }
+          }
         }
+      }
     }
+  }
 `;
 
 const Repositories:React.FC = ():React.ReactElement => {
