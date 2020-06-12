@@ -1,4 +1,4 @@
-import { Card, Col, Row } from 'antd';
+import { Alert, Card, Col, Row, Skeleton } from 'antd';
 import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
@@ -13,7 +13,6 @@ const REPOSITORIES_QUERY = gql`
           name
           description
           url
-          id
           languages(first: 5) {
             nodes {
               color
@@ -27,11 +26,25 @@ const REPOSITORIES_QUERY = gql`
 `;
 
 const Repositories:React.FC = ():React.ReactElement => {
-  const { loading, error, data } = useQuery<GetRepositoriesQuery>(REPOSITORIES_QUERY);
+  const {  loading, error, data } = useQuery<GetRepositoriesQuery>(REPOSITORIES_QUERY);
   let content;
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error! {JSON.stringify(error)}</div>;
+  if (loading) {
+    content = (
+      <Card style={{ width: 300 }} loading={loading}>
+        <Skeleton />
+      </Card>
+    )
+  }
+  if (error) {
+    content = (
+      <Alert
+        message={error}
+        type="error"
+        closable
+      />
+    );
+  }
 
   if (data) {
     const repositories = data.viewer.repositories.nodes;
