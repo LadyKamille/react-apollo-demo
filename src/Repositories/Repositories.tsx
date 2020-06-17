@@ -1,47 +1,14 @@
 import { Alert, Card, Col, Row, Skeleton } from 'antd';
 import React from 'react';
-import gql from 'graphql-tag';
 import { useGetRepositoriesQuery } from '../generated/graphql';
 import classes from './Repositories.module.css';
 import Languages from './Languages/Languages';
-
-const REPOSITORY_FRAGMENT = gql`
-  fragment Repositories on RepositoryConnection {
-    nodes {
-      name
-      description
-      url
-      id
-      languages {
-        ...Language
-      }
-    }
-  }
-`;
-
-const LANGUAGES_FRAGMENT = gql`
-  fragment Language on LanguageConnection {
-    nodes {
-      id
-      color
-      name
-    }
-  }
-`;
-
-const REPOSITORIES_QUERY = gql`
-  query getRepositories {
-    viewer {
-      repositories (last: 100, isFork: false, privacy: PUBLIC) {
-        ...Repositories
-      }
-    }
-  }
-`;
+import { repositoriesQuery } from '../graphql/repositories/repositories.query';
 
 const Repositories:React.FC = ():React.ReactElement => {
   const {  loading, error, data } = useGetRepositoriesQuery({
-    query: REPOSITORIES_QUERY,
+    query: repositoriesQuery,
+    variables: {last: 100, isFork: false, privacy: 'PUBLIC'}
   });
   let content;
 
