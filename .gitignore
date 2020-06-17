@@ -20,6 +20,7 @@
 
 # IDE
 .graphqlconfig
+graphql-schema.graphql
 .idea/
 
 npm-debug.log*

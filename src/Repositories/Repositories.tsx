@@ -1,32 +1,48 @@
 import { Alert, Card, Col, Row, Skeleton } from 'antd';
 import React from 'react';
-import { useQuery } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
-import { GetRepositoriesQuery } from '../generated/graphql';
+import { useGetRepositoriesQuery } from '../generated/graphql';
 import classes from './Repositories.module.css';
+import Languages from './Languages/Languages';
+
+const REPOSITORY_FRAGMENT = gql`
+  fragment Repositories on RepositoryConnection {
+    nodes {
+      name
+      description
+      url
+      id
+      languages {
+        ...Language
+      }
+    }
+  }
+`;
+
+const LANGUAGES_FRAGMENT = gql`
+  fragment Language on LanguageConnection {
+    nodes {
+      id
+      color
+      name
+    }
+  }
+`;
 
 const REPOSITORIES_QUERY = gql`
   query getRepositories {
     viewer {
       repositories (last: 100, isFork: false, privacy: PUBLIC) {
-        nodes {
-          name
-          description
-          url
-          languages(first: 5) {
-            nodes {
-              color
-              name
-            }
-          }
-        }
+        ...Repositories
       }
     }
   }
 `;
 
 const Repositories:React.FC = ():React.ReactElement => {
-  const {  loading, error, data } = useQuery<GetRepositoriesQuery>(REPOSITORIES_QUERY);
+  const {  loading, error, data } = useGetRepositoriesQuery({
+    query: REPOSITORIES_QUERY,
+  });
   let content;
 
   if (loading) {
@@ -49,22 +65,25 @@ const Repositories:React.FC = ():React.ReactElement => {
   if (data) {
     const repositories = data.viewer.repositories.nodes;
     content = repositories && repositories.map(repo => {
-      return (
-        <Col span={ 8 } key={repo?.name}>
-          <Card title={ repo?.name } bordered={ false }>
-            <p>{ repo?.description }</p>
-            <p>
-              <a
-                href={repo?.url}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {repo?.url}
-              </a>
-            </p>
-          </Card>
-        </Col>
-      )
+      if (repo) {
+        return (
+          <Col span={ 8 } key={ repo.name }>
+            <Card title={ repo.name } bordered={ false }>
+              <p>{ repo.description }</p>
+              <p>
+                <a
+                  href={ repo.url }
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  { repo.url }
+                </a>
+              </p>
+              <Languages languages={ repo.languages }/>
+            </Card>
+          </Col>
+        )
+      }
     });
   }
 

@@ -15505,6 +15505,8 @@ export type Team = Node & Subscribable & MemberStatusable & {
   combinedSlug: Scalars['String'];
   /** Identifies the date and time when the object was created. */
   createdAt: Scalars['DateTime'];
+  /** Identifies the primary key from the database. */
+  databaseId?: Maybe<Scalars['Int']>;
   /** The description of the team. */
   description?: Maybe<Scalars['String']>;
   /** Find a team discussion by its number. */
@@ -18190,6 +18192,26 @@ export type ViewerHovercardContext = HovercardContext & {
 };
 
 
+export type RepositoriesFragment = (
+  { __typename?: 'RepositoryConnection' }
+  & { nodes?: Maybe<Array<Maybe<(
+    { __typename?: 'Repository' }
+    & Pick<Repository, 'name' | 'description' | 'url' | 'id'>
+    & { languages?: Maybe<(
+      { __typename?: 'LanguageConnection' }
+      & LanguageFragment
+    )> }
+  )>>> }
+);
+
+export type LanguageFragment = (
+  { __typename?: 'LanguageConnection' }
+  & { nodes?: Maybe<Array<Maybe<(
+    { __typename?: 'Language' }
+    & Pick<Language, 'id' | 'color' | 'name'>
+  )>>> }
+);
+
 export type GetRepositoriesQueryVariables = {};
 
 
@@ -18199,41 +18221,42 @@ export type GetRepositoriesQuery = (
     { __typename?: 'User' }
     & { repositories: (
       { __typename?: 'RepositoryConnection' }
-      & { nodes?: Maybe<Array<Maybe<(
-        { __typename?: 'Repository' }
-        & Pick<Repository, 'name' | 'description' | 'url'>
-        & { languages?: Maybe<(
-          { __typename?: 'LanguageConnection' }
-          & { nodes?: Maybe<Array<Maybe<(
-            { __typename?: 'Language' }
-            & Pick<Language, 'color' | 'name'>
-          )>>> }
-        )> }
-      )>>> }
+      & RepositoriesFragment
     ) }
   ) }
 );
 
-
-export const GetRepositoriesDocument = gql`
-    query getRepositories {
-  viewer {
-    repositories(last: 100, isFork: false) {
-      nodes {
-        name
-        description
-        url
-        languages(first: 5) {
-          nodes {
-            color
-            name
-          }
-        }
-      }
-    }
+export const LanguageFragmentDoc = gql`
+    fragment Language on LanguageConnection {
+  nodes {
+    id
+    color
+    name
   }
 }
     `;
+export const RepositoriesFragmentDoc = gql`
+    fragment Repositories on RepositoryConnection {
+  nodes {
+    name
+    description
+    url
+    id
+    languages {
+      ...Language
+    }
+  }
+}
+    ${LanguageFragmentDoc}`;
+export const GetRepositoriesDocument = gql`
+    query getRepositories {
+  viewer {
+    repositories(last: 100, isFork: false, privacy: PUBLIC) {
+      ...Repositories
+    }
+  }
+}
+    ${RepositoriesFragmentDoc}`;
 
 /**
  * __useGetRepositoriesQuery__
